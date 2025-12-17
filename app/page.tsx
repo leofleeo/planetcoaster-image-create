@@ -13,6 +13,7 @@ import {
 	DropzoneEmptyState,
 } from "@/components/kibo-ui/dropzone";
 import ThemeSwitcher from "@/components/theme-switcher";
+import { Item } from "@/components/ui/item";
 
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
@@ -37,8 +38,23 @@ export default function Home() {
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
 					<ThemeSwitcher />
 				</div>
-				<FileDrop file={file} setFile={setFile} />
-				<canvas ref={canvas} className="w-1/2" />
+				<div className="h-128 w-1/2 max-h-128">
+					{(() => {
+						return file == null ? (
+							<FileDrop file={file} setFile={setFile} />
+						) : (
+							<Item
+								variant="outline"
+								className="bg-muted/30 flex justify-center items-center max-h-full max-w-full h-full"
+							>
+								<canvas
+									ref={canvas}
+									className="rounded-sm max-h-full max-w-full"
+								/>
+							</Item>
+						);
+					})()}
+				</div>
 			</main>
 		</div>
 	);
@@ -60,6 +76,7 @@ function FileDrop({
 			onDrop={handleDrop}
 			accept={{ "image/*": [] }}
 			onError={console.error}
+			className="h-full w-full"
 			src={file}
 		>
 			<DropzoneEmptyState />
