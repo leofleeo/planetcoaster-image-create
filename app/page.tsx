@@ -48,8 +48,8 @@ import { Item } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
-	distance: z.number().nonnegative("Value cannot be negative"),
-	size: z.number().nonnegative("Value cannot be negative"),
+	distance: z.number().positive("Value must be positive"),
+	size: z.number().positive("Value must be positive"),
 });
 
 export default function Home() {
@@ -108,7 +108,7 @@ export default function Home() {
 						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<Form />
+						<Form canvas={canvas} />
 					</Item>
 				</div>
 			</main>
@@ -141,7 +141,11 @@ function FileDrop({
 	);
 }
 
-function Form() {
+function Form({
+	canvas,
+}: {
+	canvas: React.RefObject<HTMLCanvasElement | null>;
+}) {
 	const form = useForm({
 		defaultValues: {
 			distance: 0,
@@ -151,6 +155,9 @@ function Form() {
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
+			if (canvas.current === null) {
+				return;
+			}
 			setProcessing(true);
 		},
 	});
@@ -182,6 +189,7 @@ function Form() {
 								<FieldLabel htmlFor={field.name}>Distance</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
+										aria-invalid={isInvalid}
 										type="number"
 										value={
 											Number.isNaN(field.state.value) ? "" : field.state.value
@@ -235,7 +243,11 @@ function Form() {
 					}}
 				/>
 				<Field orientation="horizontal">
-					<Button>
+					<Button
+						onClick={(e) => {
+							e.preventDefault();
+						}}
+					>
 						<Ruler /> Set map ruler
 					</Button>
 				</Field>
@@ -251,6 +263,7 @@ function Form() {
 								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
+										aria-invalid={isInvalid}
 										type="number"
 										value={
 											Number.isNaN(field.state.value) ? "" : field.state.value
