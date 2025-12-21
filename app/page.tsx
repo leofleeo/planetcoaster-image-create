@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronDownIcon, RulerIcon, TvMinimalIcon } from "lucide-react";
+import { useForm } from "@tanstack/react-form";
+import {
+	ChevronDownIcon,
+	DownloadIcon,
+	Ruler,
+	RulerIcon,
+	TvMinimalIcon,
+} from "lucide-react";
 import {
 	type Dispatch,
 	type SetStateAction,
@@ -8,12 +15,14 @@ import {
 	useRef,
 	useState,
 } from "react";
+import * as z from "zod";
 import {
 	Dropzone,
 	DropzoneContent,
 	DropzoneEmptyState,
 } from "@/components/kibo-ui/dropzone";
 import ThemeSwitcher from "@/components/theme-switcher";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -23,7 +32,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -31,10 +45,15 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 import { Item } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
+
+const formSchema = z.object({
+	distance: z.number().nonnegative("Value cannot be negative"),
+	size: z.number().nonnegative("Value cannot be negative"),
+});
 
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
-	const [unit, setUnit] = useState("km");
 	const canvas = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
 		if (file === undefined || canvas === null) {
@@ -89,67 +108,7 @@ export default function Home() {
 						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<div className="w-full">
-							<FieldGroup>
-								<Field>
-									<FieldLabel htmlFor="distance">Distance</FieldLabel>
-									<InputGroup>
-										<InputGroupInput
-											type="number"
-											id="distance"
-											placeholder="20"
-											min={0}
-										/>
-										<InputGroupAddon>
-											<RulerIcon />
-										</InputGroupAddon>
-										<InputGroupAddon align="inline-end">
-											<DropdownMenu>
-												<DropdownMenuTrigger asChild>
-													<InputGroupButton>
-														{unit} <ChevronDownIcon />
-													</InputGroupButton>
-												</DropdownMenuTrigger>
-												<DropdownMenuContent align="end">
-													<DropdownMenuLabel>Units</DropdownMenuLabel>
-													<DropdownMenuSeparator />
-													<DropdownMenuRadioGroup
-														value={unit}
-														onValueChange={setUnit}
-													>
-														<DropdownMenuRadioItem value="km">
-															Kilometers
-														</DropdownMenuRadioItem>
-														<DropdownMenuRadioItem value="m">
-															Meters
-														</DropdownMenuRadioItem>
-														<DropdownMenuRadioItem value="mi">
-															Miles
-														</DropdownMenuRadioItem>
-														<DropdownMenuRadioItem value="yd">
-															Yards
-														</DropdownMenuRadioItem>
-														<DropdownMenuRadioItem value="ft">
-															Feet
-														</DropdownMenuRadioItem>
-													</DropdownMenuRadioGroup>
-												</DropdownMenuContent>
-											</DropdownMenu>
-										</InputGroupAddon>
-									</InputGroup>
-								</Field>
-								<Field>
-									<FieldLabel htmlFor="size">In game screen size</FieldLabel>
-									<InputGroup>
-										<InputGroupInput type="number" id="size" placeholder="8" />
-										<InputGroupAddon>
-											<TvMinimalIcon />
-										</InputGroupAddon>
-										<InputGroupAddon align="inline-end">m</InputGroupAddon>
-									</InputGroup>
-								</Field>
-							</FieldGroup>
-						</div>
+						<Form />
 					</Item>
 				</div>
 			</main>
@@ -179,5 +138,148 @@ function FileDrop({
 			<DropzoneEmptyState />
 			<DropzoneContent />
 		</Dropzone>
+	);
+}
+
+function Form() {
+	const form = useForm({
+		defaultValues: {
+			distance: 0,
+			size: 0,
+		},
+		validators: {
+			onSubmit: formSchema,
+		},
+		onSubmit: async ({ value }) => {
+			setProcessing(true);
+		},
+	});
+	const [processing, setProcessing] = useState(false);
+	const [unit, setUnit] = useState("km");
+	function preventInvalid(e: React.InputEvent<HTMLInputElement>) {
+		const val = e.data;
+		if (val && !/^[0-9.]$/.test(val)) {
+			e.preventDefault();
+		}
+	}
+
+	return (
+		<form
+			className="w-full"
+			onSubmit={(e) => {
+				e.preventDefault();
+				form.handleSubmit();
+			}}
+		>
+			<FieldGroup>
+				<form.Field
+					name="distance"
+					children={(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Distance</FieldLabel>
+								<InputGroup>
+									<InputGroupInput
+										type="number"
+										value={
+											Number.isNaN(field.state.value) ? "" : field.state.value
+										}
+										onBlur={field.handleBlur}
+										inputMode="decimal"
+										id={field.name}
+										onBeforeInput={(e) => preventInvalid(e)}
+										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+									/>
+									<InputGroupAddon>
+										<RulerIcon />
+									</InputGroupAddon>
+									<InputGroupAddon align="inline-end">
+										<DropdownMenu>
+											<DropdownMenuTrigger asChild>
+												<InputGroupButton>
+													{unit} <ChevronDownIcon />
+												</InputGroupButton>
+											</DropdownMenuTrigger>
+											<DropdownMenuContent align="end">
+												<DropdownMenuLabel>Units</DropdownMenuLabel>
+												<DropdownMenuSeparator />
+												<DropdownMenuRadioGroup
+													value={unit}
+													onValueChange={setUnit}
+												>
+													<DropdownMenuRadioItem value="km">
+														Kilometers
+													</DropdownMenuRadioItem>
+													<DropdownMenuRadioItem value="m">
+														Meters
+													</DropdownMenuRadioItem>
+													<DropdownMenuRadioItem value="mi">
+														Miles
+													</DropdownMenuRadioItem>
+													<DropdownMenuRadioItem value="yd">
+														Yards
+													</DropdownMenuRadioItem>
+													<DropdownMenuRadioItem value="ft">
+														Feet
+													</DropdownMenuRadioItem>
+												</DropdownMenuRadioGroup>
+											</DropdownMenuContent>
+										</DropdownMenu>
+									</InputGroupAddon>
+								</InputGroup>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				/>
+				<Field orientation="horizontal">
+					<Button>
+						<Ruler /> Set map ruler
+					</Button>
+				</Field>
+				<form.Field
+					name="size"
+					children={(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>
+									In game screen size
+								</FieldLabel>
+								<InputGroup>
+									<InputGroupInput
+										type="number"
+										value={
+											Number.isNaN(field.state.value) ? "" : field.state.value
+										}
+										id={field.name}
+										onBlur={field.handleBlur}
+										onBeforeInput={(e) => preventInvalid(e)}
+										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+										inputMode="decimal"
+									/>
+									<InputGroupAddon>
+										<TvMinimalIcon />
+									</InputGroupAddon>
+									<InputGroupAddon align="inline-end">m</InputGroupAddon>
+								</InputGroup>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				/>
+				<Field orientation="horizontal">
+					<Button>
+						{(() => {
+							return processing ? <Spinner /> : <DownloadIcon />;
+						})()}
+						Download
+					</Button>
+				</Field>
+			</FieldGroup>
+		</form>
 	);
 }
