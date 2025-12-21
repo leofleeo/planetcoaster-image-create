@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDownIcon, RulerIcon } from "lucide-react";
 import {
 	type Dispatch,
 	type SetStateAction,
@@ -13,10 +14,27 @@ import {
 	DropzoneEmptyState,
 } from "@/components/kibo-ui/dropzone";
 import ThemeSwitcher from "@/components/theme-switcher";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import { Item } from "@/components/ui/item";
 
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
+	const [unit, setUnit] = useState("km");
 	const canvas = useRef<HTMLCanvasElement>(null);
 	useEffect(() => {
 		if (file === undefined || canvas === null) {
@@ -48,22 +66,69 @@ export default function Home() {
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
 					<ThemeSwitcher />
 				</div>
-				<div className="h-128 w-1/2 max-h-128">
-					{(() => {
-						return file == null ? (
-							<FileDrop file={file} setFile={setFile} />
-						) : (
-							<Item
-								variant="outline"
-								className="bg-muted/30 flex justify-center items-center max-h-full max-w-full h-full"
-							>
-								<canvas
-									ref={canvas}
-									className="rounded-sm max-h-full max-w-full"
-								/>
-							</Item>
-						);
-					})()}
+				<div className="w-full flex gap-4 flex-row">
+					<div className="h-128 max-h-128 flex-1">
+						{(() => {
+							return file == null ? (
+								<FileDrop file={file} setFile={setFile} />
+							) : (
+								<Item
+									variant="outline"
+									className="bg-background flex justify-center items-center max-h-full max-w-full h-full w-full"
+								>
+									<canvas
+										ref={canvas}
+										className="rounded-sm max-h-full max-w-full"
+									/>
+								</Item>
+							);
+						})()}
+					</div>
+					<Item
+						variant="outline"
+						className="flex-1 bg-background flex items-start p-4"
+					>
+						<h2 className="text-2xl font-bold">Options</h2>
+						<InputGroup>
+							<InputGroupInput type="number" placeholder="Distance" min={0} />
+							<InputGroupAddon>
+								<RulerIcon />
+							</InputGroupAddon>
+							<InputGroupAddon align="inline-end">
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<InputGroupButton>
+											{unit} <ChevronDownIcon />
+										</InputGroupButton>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuLabel>Units</DropdownMenuLabel>
+										<DropdownMenuSeparator />
+										<DropdownMenuRadioGroup
+											value={unit}
+											onValueChange={setUnit}
+										>
+											<DropdownMenuRadioItem value="km">
+												Kilometers
+											</DropdownMenuRadioItem>
+											<DropdownMenuRadioItem value="m">
+												Meters
+											</DropdownMenuRadioItem>
+											<DropdownMenuRadioItem value="mi">
+												Miles
+											</DropdownMenuRadioItem>
+											<DropdownMenuRadioItem value="yd">
+												Yards
+											</DropdownMenuRadioItem>
+											<DropdownMenuRadioItem value="ft">
+												Feet
+											</DropdownMenuRadioItem>
+										</DropdownMenuRadioGroup>
+									</DropdownMenuContent>
+								</DropdownMenu>
+							</InputGroupAddon>
+						</InputGroup>
+					</Item>
 				</div>
 			</main>
 		</div>
