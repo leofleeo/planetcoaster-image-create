@@ -25,9 +25,19 @@ export default function Home() {
 		const ctx = canvas.current?.getContext("2d");
 		if (ctx !== undefined && ctx !== null) {
 			Promise.all([createImageBitmap(file[0])]).then((img) => {
-				ctx.canvas.width = img[0].width;
-				ctx.canvas.height = img[0].height;
-				ctx.drawImage(img[0], 0, 0);
+				const containerWidth =
+					ctx.canvas.parentElement?.clientWidth || ctx.canvas.clientWidth;
+				const containerHeight =
+					ctx.canvas.parentElement?.clientHeight || ctx.canvas.clientHeight;
+				const wRatio = containerWidth / img[0].width;
+				const hRatio = containerHeight / img[0].height;
+				const ratio = Math.min(wRatio, hRatio);
+				console.log(ratio);
+				console.log(wRatio);
+				console.log(hRatio);
+				ctx.canvas.width = img[0].width * ratio;
+				ctx.canvas.height = img[0].height * ratio;
+				ctx.drawImage(img[0], 0, 0, ctx.canvas.width, ctx.canvas.height);
 			});
 		}
 	}, [file]);
