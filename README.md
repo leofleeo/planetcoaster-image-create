@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## This project is a WIP
+
+This project is a work in progress, it currently does not work!
+
+## Summary
+
+This is a web tool to automatically crop maps into the correct size for planet coaster
+
 ## Getting Started
 
 First, run the development server:

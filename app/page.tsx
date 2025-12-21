@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon, RulerIcon } from "lucide-react";
+import { ChevronDownIcon, RulerIcon, TvMinimalIcon } from "lucide-react";
 import {
 	type Dispatch,
 	type SetStateAction,
@@ -17,13 +17,13 @@ import ThemeSwitcher from "@/components/theme-switcher";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -86,48 +86,70 @@ export default function Home() {
 					</div>
 					<Item
 						variant="outline"
-						className="flex-1 bg-background flex items-start p-4"
+						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<InputGroup>
-							<InputGroupInput type="number" placeholder="Distance" min={0} />
-							<InputGroupAddon>
-								<RulerIcon />
-							</InputGroupAddon>
-							<InputGroupAddon align="inline-end">
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<InputGroupButton>
-											{unit} <ChevronDownIcon />
-										</InputGroupButton>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="end">
-										<DropdownMenuLabel>Units</DropdownMenuLabel>
-										<DropdownMenuSeparator />
-										<DropdownMenuRadioGroup
-											value={unit}
-											onValueChange={setUnit}
-										>
-											<DropdownMenuRadioItem value="km">
-												Kilometers
-											</DropdownMenuRadioItem>
-											<DropdownMenuRadioItem value="m">
-												Meters
-											</DropdownMenuRadioItem>
-											<DropdownMenuRadioItem value="mi">
-												Miles
-											</DropdownMenuRadioItem>
-											<DropdownMenuRadioItem value="yd">
-												Yards
-											</DropdownMenuRadioItem>
-											<DropdownMenuRadioItem value="ft">
-												Feet
-											</DropdownMenuRadioItem>
-										</DropdownMenuRadioGroup>
-									</DropdownMenuContent>
-								</DropdownMenu>
-							</InputGroupAddon>
-						</InputGroup>
+						<form className="w-full">
+							<FieldGroup>
+								<Field>
+									<FieldLabel htmlFor="distance">Distance</FieldLabel>
+									<InputGroup>
+										<InputGroupInput
+											type="number"
+											id="distance"
+											placeholder="20"
+											min={0}
+										/>
+										<InputGroupAddon>
+											<RulerIcon />
+										</InputGroupAddon>
+										<InputGroupAddon align="inline-end">
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<InputGroupButton>
+														{unit} <ChevronDownIcon />
+													</InputGroupButton>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent align="end">
+													<DropdownMenuLabel>Units</DropdownMenuLabel>
+													<DropdownMenuSeparator />
+													<DropdownMenuRadioGroup
+														value={unit}
+														onValueChange={setUnit}
+													>
+														<DropdownMenuRadioItem value="km">
+															Kilometers
+														</DropdownMenuRadioItem>
+														<DropdownMenuRadioItem value="m">
+															Meters
+														</DropdownMenuRadioItem>
+														<DropdownMenuRadioItem value="mi">
+															Miles
+														</DropdownMenuRadioItem>
+														<DropdownMenuRadioItem value="yd">
+															Yards
+														</DropdownMenuRadioItem>
+														<DropdownMenuRadioItem value="ft">
+															Feet
+														</DropdownMenuRadioItem>
+													</DropdownMenuRadioGroup>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										</InputGroupAddon>
+									</InputGroup>
+								</Field>
+								<Field>
+									<FieldLabel htmlFor="size">In game screen size</FieldLabel>
+									<InputGroup>
+										<InputGroupInput type="number" id="size" placeholder="8" />
+										<InputGroupAddon>
+											<TvMinimalIcon />
+										</InputGroupAddon>
+										<InputGroupAddon align="inline-end">m</InputGroupAddon>
+									</InputGroup>
+								</Field>
+							</FieldGroup>
+						</form>
 					</Item>
 				</div>
 			</main>
