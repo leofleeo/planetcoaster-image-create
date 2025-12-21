@@ -89,7 +89,7 @@ export default function Home() {
 						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<form className="w-full">
+						<div className="w-full">
 							<FieldGroup>
 								<Field>
 									<FieldLabel htmlFor="distance">Distance</FieldLabel>
@@ -149,7 +149,7 @@ export default function Home() {
 									</InputGroup>
 								</Field>
 							</FieldGroup>
-						</form>
+						</div>
 					</Item>
 				</div>
 			</main>
