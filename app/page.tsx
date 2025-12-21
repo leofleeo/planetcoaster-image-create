@@ -170,6 +170,10 @@ function Form({
 		}
 	}
 
+	function onSetRuler(e: React.MouseEvent<HTMLButtonElement>) {
+		e.preventDefault();
+	}
+
 	return (
 		<form
 			className="w-full"
@@ -243,11 +247,7 @@ function Form({
 					}}
 				/>
 				<Field orientation="horizontal">
-					<Button
-						onClick={(e) => {
-							e.preventDefault();
-						}}
-					>
+					<Button onClick={(e) => onSetRuler(e)}>
 						<Ruler /> Set map ruler
 					</Button>
 				</Field>
