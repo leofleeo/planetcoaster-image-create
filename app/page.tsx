@@ -5,13 +5,13 @@ import {
 	ChevronDownIcon,
 	DownloadIcon,
 	RotateCcwIcon,
-	Ruler,
 	RulerIcon,
 	TvMinimalIcon,
 	ZoomInIcon,
 	ZoomOutIcon,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import {
 	TransformComponent,
@@ -87,7 +87,7 @@ export default function Home() {
 									variant="outline"
 									className="bg-background flex justify-start items-start max-h-full max-w-full h-full w-full"
 								>
-									<TransformWrapper minScale={0.8}>
+									<TransformWrapper minScale={0.6}>
 										{({ zoomIn, zoomOut, resetTransform, ...rest }) => (
 											<>
 												<Controls />
@@ -113,6 +113,18 @@ export default function Home() {
 						<h2 className="text-2xl font-bold">Options</h2>
 						<Form file={file} />
 					</Item>
+				</div>
+				<div>
+					<p>
+						All processing is done locally on your computer. The image you
+						upload to the website is not uploaded to the internet.
+					</p>
+					<p>
+						Made with ❤️ by{" "}
+						<Link href="https://github.com/leofleeo" className="underline">
+							leofleeo
+						</Link>
+					</p>
 				</div>
 			</main>
 		</div>
@@ -206,6 +218,10 @@ function Form({ file }: { file: File[] | undefined }) {
 		e.preventDefault();
 	}
 
+	function onResetRuler(e: React.MouseEvent<HTMLButtonElement>) {
+		e.preventDefault();
+	}
+
 	return (
 		<form
 			className="w-full"
@@ -280,7 +296,10 @@ function Form({ file }: { file: File[] | undefined }) {
 				/>
 				<Field orientation="horizontal">
 					<Button onClick={(e) => onSetRuler(e)}>
-						<Ruler /> Set map ruler
+						<RulerIcon /> Set map ruler
+					</Button>
+					<Button onClick={(e) => onResetRuler(e)}>
+						<RotateCcwIcon /> Reset ruler
 					</Button>
 				</Field>
 				<form.Field
