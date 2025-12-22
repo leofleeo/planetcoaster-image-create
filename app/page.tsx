@@ -46,6 +46,8 @@ import {
 } from "@/components/ui/input-group";
 import { Item } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import Image from "next/image";
 
 const formSchema = z.object({
 	distance: z.number().positive("Value must be positive"),
@@ -55,31 +57,21 @@ const formSchema = z.object({
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
 	const canvas = useRef<HTMLCanvasElement>(null);
+	const [uploadedImgUrl, setUploadedImgUrl] = useState<string | undefined>();
 	useEffect(() => {
-		if (file === undefined || canvas === null) {
-			return;
-		}
-		const ctx = canvas.current?.getContext("2d");
-		if (ctx !== undefined && ctx !== null) {
-			Promise.all([createImageBitmap(file[0])]).then((img) => {
-				const containerWidth =
-					ctx.canvas.parentElement?.clientWidth || ctx.canvas.clientWidth;
-				const containerHeight =
-					ctx.canvas.parentElement?.clientHeight || ctx.canvas.clientHeight;
-				const wRatio = containerWidth / img[0].width;
-				const hRatio = containerHeight / img[0].height;
-				const ratio = Math.min(wRatio, hRatio);
-				console.log(ratio);
-				console.log(wRatio);
-				console.log(hRatio);
-				ctx.canvas.width = img[0].width * ratio;
-				ctx.canvas.height = img[0].height * ratio;
-				ctx.drawImage(img[0], 0, 0, ctx.canvas.width, ctx.canvas.height);
-			});
+		console.log("useeffect activate")
+		if(file !== undefined) {
+			setUploadedImgUrl(URL.createObjectURL(file[0]));
 		}
 	}, [file]);
+
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+			{
+			// Eruda for developer tools on devices with devtools restricted
+			//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
+			//<script>eruda.init();</script>
+			}
 			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 py-16 px-16 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
@@ -88,17 +80,18 @@ export default function Home() {
 				<div className="w-full flex gap-4 flex-row">
 					<div className="h-128 max-h-128 flex-1">
 						{(() => {
-							return file == null ? (
+							return uploadedImgUrl === undefined ? (
 								<FileDrop file={file} setFile={setFile} />
 							) : (
 								<Item
 									variant="outline"
 									className="bg-background flex justify-center items-center max-h-full max-w-full h-full w-full"
 								>
-									<canvas
-										ref={canvas}
-										className="rounded-sm max-h-full max-w-full"
-									/>
+									<TransformWrapper minScale={0.1}>
+										<TransformComponent wrapperClass="min-w-full min-h-full" contentClass="w-full h-full">
+											<Image src={uploadedImgUrl} alt="uploaded image" fill className="relative!" />
+										</TransformComponent>
+									</TransformWrapper>
 								</Item>
 							);
 						})()}
