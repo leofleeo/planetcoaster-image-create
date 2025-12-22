@@ -4,17 +4,20 @@ import { useForm } from "@tanstack/react-form";
 import {
 	ChevronDownIcon,
 	DownloadIcon,
+	RotateCcwIcon,
 	Ruler,
 	RulerIcon,
 	TvMinimalIcon,
+	ZoomInIcon,
+	ZoomOutIcon,
 } from "lucide-react";
+import Image from "next/image";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import {
-	type Dispatch,
-	type SetStateAction,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+	TransformComponent,
+	TransformWrapper,
+	useControls,
+} from "react-zoom-pan-pinch";
 import * as z from "zod";
 import {
 	Dropzone,
@@ -46,8 +49,6 @@ import {
 } from "@/components/ui/input-group";
 import { Item } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import Image from "next/image";
 
 const formSchema = z.object({
 	distance: z.number().positive("Value must be positive"),
@@ -56,11 +57,10 @@ const formSchema = z.object({
 
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
-	const canvas = useRef<HTMLCanvasElement>(null);
 	const [uploadedImgUrl, setUploadedImgUrl] = useState<string | undefined>();
 	useEffect(() => {
-		console.log("useeffect activate")
-		if(file !== undefined) {
+		console.log("useeffect activate");
+		if (file !== undefined) {
 			setUploadedImgUrl(URL.createObjectURL(file[0]));
 		}
 	}, [file]);
@@ -68,9 +68,9 @@ export default function Home() {
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
 			{
-			// Eruda for developer tools on devices with devtools restricted
-			//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
-			//<script>eruda.init();</script>
+				// Eruda for developer tools on devices with devtools restricted
+				//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
+				//<script>eruda.init();</script>
 			}
 			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 py-16 px-16 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
@@ -85,12 +85,22 @@ export default function Home() {
 							) : (
 								<Item
 									variant="outline"
-									className="bg-background flex justify-center items-center max-h-full max-w-full h-full w-full"
+									className="bg-background flex justify-start items-start max-h-full max-w-full h-full w-full"
 								>
-									<TransformWrapper minScale={0.1}>
-										<TransformComponent wrapperClass="min-w-full min-h-full" contentClass="w-full h-full">
-											<Image src={uploadedImgUrl} alt="uploaded image" fill className="relative!" />
-										</TransformComponent>
+									<TransformWrapper minScale={0.8}>
+										{({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+											<>
+												<Controls />
+												<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm">
+													<Image
+														src={uploadedImgUrl}
+														alt="uploaded image"
+														fill
+														className="relative!"
+													/>
+												</TransformComponent>
+											</>
+										)}
 									</TransformWrapper>
 								</Item>
 							);
@@ -101,7 +111,7 @@ export default function Home() {
 						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<Form canvas={canvas} />
+						<Form file={file} />
 					</Item>
 				</div>
 			</main>
@@ -134,11 +144,40 @@ function FileDrop({
 	);
 }
 
-function Form({
-	canvas,
-}: {
-	canvas: React.RefObject<HTMLCanvasElement | null>;
-}) {
+const Controls = () => {
+	const { zoomIn, zoomOut, resetTransform } = useControls();
+
+	return (
+		<div className="flex gap-4 z-10 absolute m-2 p-2 bg-muted/30 rounded-sm">
+			<Button
+				size="icon"
+				variant="secondary"
+				onClick={() => zoomIn()}
+				title="Zoom In"
+			>
+				<ZoomInIcon />
+			</Button>
+			<Button
+				size="icon"
+				variant="secondary"
+				onClick={() => zoomOut()}
+				title="Zoom Out"
+			>
+				<ZoomOutIcon />
+			</Button>
+			<Button
+				size="icon"
+				variant="secondary"
+				onClick={() => resetTransform()}
+				title="Reset zoom"
+			>
+				<RotateCcwIcon />
+			</Button>
+		</div>
+	);
+};
+
+function Form({ file }: { file: File[] | undefined }) {
 	const form = useForm({
 		defaultValues: {
 			distance: 0,
@@ -148,7 +187,7 @@ function Form({
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			if (canvas.current === null) {
+			if (file === undefined) {
 				return;
 			}
 			setProcessing(true);
