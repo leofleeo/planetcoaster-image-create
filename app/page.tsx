@@ -88,7 +88,7 @@ export default function Home() {
 									className="bg-background flex justify-start items-start max-h-full max-w-full h-full w-full"
 								>
 									<TransformWrapper minScale={0.6}>
-										{({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+										{({ zoomIn, zoomOut, resetTransform, ..._rest }) => (
 											<>
 												<Controls />
 												<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm">
