@@ -83,26 +83,21 @@ export default function Home() {
 							return uploadedImgUrl === undefined ? (
 								<FileDrop file={file} setFile={setFile} />
 							) : (
-								<Item
-									variant="outline"
-									className="bg-background flex justify-start items-start max-h-full max-w-full h-full w-full"
-								>
-									<TransformWrapper minScale={0.6}>
-										{({ zoomIn, zoomOut, resetTransform, ..._rest }) => (
-											<>
-												<Controls />
-												<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm">
-													<Image
-														src={uploadedImgUrl}
-														alt="uploaded image"
-														fill
-														className="relative!"
-													/>
-												</TransformComponent>
-											</>
-										)}
-									</TransformWrapper>
-								</Item>
+								<TransformWrapper minScale={0.6}>
+									{({ zoomIn, zoomOut, resetTransform, ..._rest }) => (
+										<>
+											<Controls />
+											<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm border border-border bg-background">
+												<Image
+													src={uploadedImgUrl}
+													alt="uploaded image"
+													fill
+													className="relative!"
+												/>
+											</TransformComponent>
+										</>
+									)}
+								</TransformWrapper>
 							);
 						})()}
 					</div>
@@ -160,10 +155,11 @@ const Controls = () => {
 	const { zoomIn, zoomOut, resetTransform } = useControls();
 
 	return (
-		<div className="flex gap-4 z-10 absolute m-2 p-2 bg-muted/30 rounded-sm">
+		<div className="flex gap-4 z-10 absolute m-2 p-2 bg-muted/50 rounded-sm">
 			<Button
 				size="icon"
 				variant="secondary"
+				className="border border-border"
 				onClick={() => zoomIn()}
 				title="Zoom In"
 			>
@@ -172,6 +168,7 @@ const Controls = () => {
 			<Button
 				size="icon"
 				variant="secondary"
+				className="border border-border"
 				onClick={() => zoomOut()}
 				title="Zoom Out"
 			>
@@ -180,6 +177,7 @@ const Controls = () => {
 			<Button
 				size="icon"
 				variant="secondary"
+				className="border border-border"
 				onClick={() => resetTransform()}
 				title="Reset zoom"
 			>
