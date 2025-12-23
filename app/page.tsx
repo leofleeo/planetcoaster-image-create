@@ -59,6 +59,10 @@ const formSchema = z.object({
 export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
 	const [uploadedImgUrl, setUploadedImgUrl] = useState<string | undefined>();
+	const [rulerDragging, setRulerDragging] = useState(false);
+	const [rulerY, setRulerY] = useState(0);
+	const [rulerP1X, setRulerP1X] = useState(0);
+	const [rulerP2X, setRulerP2X] = useState(0)
 	useEffect(() => {
 		console.log("useeffect activate");
 		if (file !== undefined) {
@@ -84,7 +88,7 @@ export default function Home() {
 							return uploadedImgUrl === undefined ? (
 								<FileDrop file={file} setFile={setFile} />
 							) : (
-								<TransformWrapper minScale={0.6}>
+								<TransformWrapper minScale={0.6} disabled={rulerDragging}>
 									{({ zoomIn, zoomOut, resetTransform, ..._rest }) => (
 										<>
 											<Controls />
@@ -95,7 +99,7 @@ export default function Home() {
 													fill
 													className="relative!"
 												/>
-												<Ruler p1x={50} y={50} p2x={100} />
+												<Ruler p1x={rulerP1X} y={rulerY} p2x={rulerP2X} setP1X={setRulerP1X} setP2X={setRulerP2X} setY={setRulerY} setDragging={setRulerDragging} />
 											</TransformComponent>
 										</>
 									)}
