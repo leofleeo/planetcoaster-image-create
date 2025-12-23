@@ -24,6 +24,7 @@ import {
 	DropzoneContent,
 	DropzoneEmptyState,
 } from "@/components/kibo-ui/dropzone";
+import Ruler from "@/components/ruler";
 import ThemeSwitcher from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,6 +95,7 @@ export default function Home() {
 													fill
 													className="relative!"
 												/>
+												<Ruler p1x={450} y={50} p2x={600} />
 											</TransformComponent>
 										</>
 									)}
