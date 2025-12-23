@@ -35,56 +35,78 @@ export default function Ruler({
 		P2,
 	}
 	const [whichDragged, setWhichDragged] = useState(Points.None);
-
-	let currentPoint = 0;
+	const [currentPoint, setCurrentPoint] = useState(1);
 
 	useEffect(() => {
 		if (!setting) {
-			svg.current?.classList.remove("cursor-crosshair")
-			return
+			svg.current?.classList.remove("cursor-crosshair");
+			return;
 		}
 		svg.current?.classList.add("cursor-crosshair");
-	}, [setting])
+	}, [setting]);
+
+	const convertPosToSVGPos = (x: number, y: number): DOMPoint | undefined => {
+		if (svg.current == null) {
+			return;
+		}
+		const pt = svg.current.createSVGPoint();
+		pt.x = x;
+		pt.y = y;
+		const adjustedPt = pt.matrixTransform(
+			svg.current.getScreenCTM()?.inverse(),
+		);
+		return adjustedPt;
+	};
 
 	const onMove = (e: MouseEvent) => {
-		if (
-			e.buttons === 1 &&
-			svg.current !== null &&
-			whichDragged !== Points.None
-		) {
-			const pt = svg.current.createSVGPoint();
-			pt.x = e.clientX;
-			pt.y = e.clientY;
-			const adjustedPt = pt.matrixTransform(
-				svg.current.getScreenCTM()?.inverse(),
-			);
-			setY(adjustedPt.y);
+		if (e.buttons === 1 && whichDragged !== Points.None) {
+			const pt = convertPosToSVGPos(e.clientX, e.clientY);
+			if (pt === undefined) {
+				return;
+			}
+			setY(pt.y);
 			if (whichDragged === Points.P1) {
-				setP1X(adjustedPt.x);
+				setP1X(pt.x);
 			} else {
-				setP2X(adjustedPt.x);
+				setP2X(pt.x);
 			}
 		}
 	};
 
-	const onClick = () => {
-		if(!setting) {
-			return
+	const onClick = (e: MouseEvent) => {
+		console.log("onclicky");
+		if (!setting) {
+			return;
 		}
-		currentPoint++;
-		if(currentPoint >= 2) {
-			currentPoint = 0;
+		console.log("is setty");
+		const pt = convertPosToSVGPos(e.clientX, e.clientY);
+		if (pt === undefined) {
+			return;
+		}
+		if (currentPoint === 1) {
+			console.log("is 1");
+			setP1X(pt.x);
+			setP2X(pt.x);
+			setY(pt.y);
+			setCurrentPoint(2);
+		}
+		if (currentPoint >= 2) {
+			console.log("is 2 or greater");
+			setP2X(pt.x);
+			setY(pt.y);
+			setCurrentPoint(1);
 			setSetting(false);
 		}
-	}
+	};
 	return (
+		// biome-ignore lint/a11y/useKeyWithClickEvents: a keypress just wouldn't make sense why would I even need this?? people who really need to use keyboard can just rebind a key to their mouse
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			className="z-5 absolute w-full h-full"
 			aria-label="ruler"
 			role="img"
 			ref={svg}
-			onMouseMove={(e) => onMove(e)}
+			onMouseMove={onMove}
 			onMouseUp={() => {
 				setDragging(false);
 				setWhichDragged(Points.None);
@@ -97,14 +119,14 @@ export default function Ruler({
 					y1={y}
 					x2={p2x}
 					y2={y}
-					className="stroke-black stroke-10"
+					className="stroke-black stroke-6"
 				/>
 				<line
 					x1={p1x}
 					y1={y}
 					x2={p2x}
 					y2={y}
-					className="stroke-white stroke-4"
+					className="stroke-white stroke-2"
 				/>
 			</svg>
 			<svg
@@ -121,8 +143,8 @@ export default function Ruler({
 					setWhichDragged(Points.P1);
 				}}
 			>
-				<circle r="8" cx={0} cy={0} fill="black" />
-				<circle r="4" cx={0} cy={0} fill="white" />
+				<circle r="4" cx={0} cy={0} fill="black" />
+				<circle r="2" cx={0} cy={0} fill="white" />
 			</svg>
 			<svg
 				role="img"
@@ -138,8 +160,8 @@ export default function Ruler({
 					setWhichDragged(Points.P2);
 				}}
 			>
-				<circle r="8" cx={0} cy={0} fill="black" />
-				<circle r="4" cx={0} cy={0} fill="white" />
+				<circle r="4" cx={0} cy={0} fill="black" />
+				<circle r="2" cx={0} cy={0} fill="white" />
 			</svg>
 		</svg>
 	);
