@@ -29,6 +29,11 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
+				{
+					// Eruda for developer tools on devices with devtools restricted
+					//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
+					//<script>eruda.init();</script>
+				}
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"

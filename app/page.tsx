@@ -12,7 +12,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import {
+	type Dispatch,
+	type SetStateAction,
+	useEffect,
+	useState,
+} from "react";
 import {
 	TransformComponent,
 	TransformWrapper,
@@ -57,26 +62,49 @@ const formSchema = z.object({
 });
 
 export default function Home() {
+	const [rulerActive, setRulerActive] = useState(false);
 	const [file, setFile] = useState<File[] | undefined>();
 	const [uploadedImgUrl, setUploadedImgUrl] = useState<string | undefined>();
 	const [rulerDragging, setRulerDragging] = useState(false);
 	const [rulerY, setRulerY] = useState(20);
 	const [rulerP1X, setRulerP1X] = useState(10);
-	const [rulerP2X, setRulerP2X] = useState(40)
+	const [rulerP2X, setRulerP2X] = useState(40);
+	const [settingRuler, setSettingRuler] = useState(false);
 	useEffect(() => {
-		console.log("useeffect activate");
 		if (file !== undefined) {
 			setUploadedImgUrl(URL.createObjectURL(file[0]));
 		}
 	}, [file]);
 
+	const onSetRuler = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		setRulerActive(true);
+		setRulerP1X(-10);
+		setRulerP2X(-10);
+		setRulerY(-10);
+		setSettingRuler(true);
+	};
+
+	const onResetRuler = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		setRulerActive(false);
+	};
+
+	const beforeSubmit = () => {
+		console.log("aaaa");
+		if (file === undefined || file.length < 1 || rulerActive === false) {
+			return false;
+		}
+		return true;
+	};
+
+	const onSubmit = (value: { distance: number; size: number }) => {
+		console.log(rulerP1X);
+		console.log("HIIII");
+	};
+
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-			{
-				// Eruda for developer tools on devices with devtools restricted
-			}
-				<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
-				<script>eruda.init();</script>
 			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 py-16 px-16 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
@@ -99,7 +127,19 @@ export default function Home() {
 													fill
 													className="relative!"
 												/>
-												<Ruler p1x={rulerP1X} y={rulerY} p2x={rulerP2X} setP1X={setRulerP1X} setP2X={setRulerP2X} setY={setRulerY} setDragging={setRulerDragging} />
+												{rulerActive ? (
+													<Ruler
+														p1x={rulerP1X}
+														y={rulerY}
+														p2x={rulerP2X}
+														setP1X={setRulerP1X}
+														setP2X={setRulerP2X}
+														setY={setRulerY}
+														setDragging={setRulerDragging}
+														setting={settingRuler}
+														setSetting={setSettingRuler}
+													/>
+												) : null}
 											</TransformComponent>
 										</>
 									)}
@@ -112,7 +152,12 @@ export default function Home() {
 						className="flex-1 bg-background flex items-start p-4 flex-col"
 					>
 						<h2 className="text-2xl font-bold">Options</h2>
-						<Form file={file} />
+						<Form
+							onSetRuler={onSetRuler}
+							onResetRuler={onResetRuler}
+							beforeSubmit={beforeSubmit}
+							onSubmit={onSubmit}
+						/>
 					</Item>
 				</div>
 				<div>
@@ -193,7 +238,17 @@ const Controls = () => {
 	);
 };
 
-function Form({ file }: { file: File[] | undefined }) {
+function Form({
+	onSetRuler,
+	onResetRuler,
+	onSubmit,
+	beforeSubmit, //this function will return true if there is not a missing value, if not it will return false
+}: {
+	onSetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	onResetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	onSubmit: (value: { distance: number; size: number }) => void;
+	beforeSubmit: () => boolean;
+}) {
 	const form = useForm({
 		defaultValues: {
 			distance: 0,
@@ -203,27 +258,24 @@ function Form({ file }: { file: File[] | undefined }) {
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			if (file === undefined) {
+			if (!beforeSubmit()) {
 				return;
 			}
+			console.log("boingo");
 			setProcessing(true);
+			onSubmit(value);
+			setTimeout(() => {
+				setProcessing(false);
+			}, 1000);
 		},
 	});
 	const [processing, setProcessing] = useState(false);
-	const [unit, setUnit] = useState("km");
+	const [unit, setUnit] = useState("m");
 	function preventInvalid(e: React.InputEvent<HTMLInputElement>) {
 		const val = e.data;
 		if (val && !/^[0-9.]$/.test(val)) {
 			e.preventDefault();
 		}
-	}
-
-	function onSetRuler(e: React.MouseEvent<HTMLButtonElement>) {
-		e.preventDefault();
-	}
-
-	function onResetRuler(e: React.MouseEvent<HTMLButtonElement>) {
-		e.preventDefault();
 	}
 
 	return (

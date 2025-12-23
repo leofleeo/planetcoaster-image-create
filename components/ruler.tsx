@@ -1,9 +1,10 @@
 import {
-	useRef,
-	useState,
 	type Dispatch,
 	type MouseEvent,
 	type SetStateAction,
+	useEffect,
+	useRef,
+	useState,
 } from "react";
 
 export default function Ruler({
@@ -14,6 +15,8 @@ export default function Ruler({
 	setP1X,
 	setP2X,
 	setY,
+	setting,
+	setSetting,
 }: {
 	p1x: number;
 	p2x: number;
@@ -22,15 +25,26 @@ export default function Ruler({
 	setP2X: Dispatch<SetStateAction<number>>;
 	setY: Dispatch<SetStateAction<number>>;
 	setDragging: Dispatch<SetStateAction<boolean>>;
+	setting: boolean;
+	setSetting: Dispatch<SetStateAction<boolean>>;
 }) {
+	const svg = useRef<SVGSVGElement>(null);
 	enum Points {
 		None = 0,
 		P1,
 		P2,
 	}
-
 	const [whichDragged, setWhichDragged] = useState(Points.None);
-	const svg = useRef<SVGSVGElement>(null);
+
+	let currentPoint = 0;
+
+	useEffect(() => {
+		if (!setting) {
+			svg.current?.classList.remove("cursor-crosshair")
+			return
+		}
+		svg.current?.classList.add("cursor-crosshair");
+	}, [setting])
 
 	const onMove = (e: MouseEvent) => {
 		if (
@@ -52,6 +66,17 @@ export default function Ruler({
 			}
 		}
 	};
+
+	const onClick = () => {
+		if(!setting) {
+			return
+		}
+		currentPoint++;
+		if(currentPoint >= 2) {
+			currentPoint = 0;
+			setSetting(false);
+		}
+	}
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -64,6 +89,7 @@ export default function Ruler({
 				setDragging(false);
 				setWhichDragged(Points.None);
 			}}
+			onClick={onClick}
 		>
 			<svg role="img" aria-label="line" className="z-6">
 				<line
