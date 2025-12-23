@@ -14,20 +14,30 @@ export default function Ruler({
 			aria-label="ruler"
 			role="img"
 		>
-			<line
-				x1={p1x}
-				y1={y}
-				x2={p2x}
-				y2={y}
-				className="stroke-black stroke-12"
-			/>
-			<line x1={p1x} y1={y} x2={p2x} y2={y} className="stroke-white stroke-4" />
-			<svg role="img" aria-label="point1">
-				<circle r="10" cx={p1x} cy={y} fill="black" />
-				<circle r="10" cx={p2x} cy={y} fill="black" />
+			<svg role="img" aria-label="line" className="z-6">
+				<line
+					x1={p1x}
+					y1={y}
+					x2={p2x}
+					y2={y}
+					className="stroke-black stroke-10"
+				/>
+				<line
+					x1={p1x}
+					y1={y}
+					x2={p2x}
+					y2={y}
+					className="stroke-white stroke-4"
+				/>
 			</svg>
-			<circle r="5" cx={p1x} cy={y} fill="white" />
-			<circle r="5" cx={p2x} cy={y} fill="white" />
+			<svg role="img" aria-label="point1" className="z-8 cursor-move">
+				<circle r="8" cx={p1x} cy={y} fill="black" />
+				<circle r="4" cx={p1x} cy={y} fill="white" />
+			</svg>
+			<svg role="img" aria-label="point2" className="z-7 cursor-move">
+				<circle r="8" cx={p2x} cy={y} fill="black" />
+				<circle r="4" cx={p2x} cy={y} fill="white" />
+			</svg>
 		</svg>
 	);
 }

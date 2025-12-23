@@ -95,7 +95,7 @@ export default function Home() {
 													fill
 													className="relative!"
 												/>
-												<Ruler p1x={450} y={50} p2x={600} />
+												<Ruler p1x={50} y={50} p2x={100} />
 											</TransformComponent>
 										</>
 									)}
