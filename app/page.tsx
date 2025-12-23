@@ -60,9 +60,9 @@ export default function Home() {
 	const [file, setFile] = useState<File[] | undefined>();
 	const [uploadedImgUrl, setUploadedImgUrl] = useState<string | undefined>();
 	const [rulerDragging, setRulerDragging] = useState(false);
-	const [rulerY, setRulerY] = useState(0);
-	const [rulerP1X, setRulerP1X] = useState(0);
-	const [rulerP2X, setRulerP2X] = useState(0)
+	const [rulerY, setRulerY] = useState(20);
+	const [rulerP1X, setRulerP1X] = useState(10);
+	const [rulerP2X, setRulerP2X] = useState(40)
 	useEffect(() => {
 		console.log("useeffect activate");
 		if (file !== undefined) {
@@ -74,9 +74,9 @@ export default function Home() {
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
 			{
 				// Eruda for developer tools on devices with devtools restricted
-				//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
-				//<script>eruda.init();</script>
 			}
+				<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
+				<script>eruda.init();</script>
 			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 py-16 px-16 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>

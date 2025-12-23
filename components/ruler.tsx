@@ -1,4 +1,10 @@
-import type { Dispatch, SetStateAction } from "react";
+import {
+	useRef,
+	useState,
+	type Dispatch,
+	type MouseEvent,
+	type SetStateAction,
+} from "react";
 
 export default function Ruler({
 	p1x,
@@ -7,29 +13,57 @@ export default function Ruler({
 	setDragging,
 	setP1X,
 	setP2X,
-	setY
+	setY,
 }: {
 	p1x: number;
 	p2x: number;
 	y: number;
-	setP1X: Dispatch<SetStateAction<number>>
-	setP2X: Dispatch<SetStateAction<number>>
-	setY: Dispatch<SetStateAction<number>>
-	setDragging: Dispatch<SetStateAction<boolean>>
+	setP1X: Dispatch<SetStateAction<number>>;
+	setP2X: Dispatch<SetStateAction<number>>;
+	setY: Dispatch<SetStateAction<number>>;
+	setDragging: Dispatch<SetStateAction<boolean>>;
 }) {
-	const startDragging =  () => {
-		setDragging(true);
-	}
-	const stopDragging = () => {
-		setDragging(false);
+	enum Points {
+		None = 0,
+		P1,
+		P2,
 	}
 
+	const [whichDragged, setWhichDragged] = useState(Points.None);
+	const svg = useRef<SVGSVGElement>(null);
+
+	const onMove = (e: MouseEvent) => {
+		if (
+			e.buttons === 1 &&
+			svg.current !== null &&
+			whichDragged !== Points.None
+		) {
+			const pt = svg.current.createSVGPoint();
+			pt.x = e.clientX;
+			pt.y = e.clientY;
+			const adjustedPt = pt.matrixTransform(
+				svg.current.getScreenCTM()?.inverse(),
+			);
+			setY(adjustedPt.y);
+			if (whichDragged === Points.P1) {
+				setP1X(adjustedPt.x);
+			} else {
+				setP2X(adjustedPt.x);
+			}
+		}
+	};
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			className="z-5 absolute w-full h-full"
 			aria-label="ruler"
 			role="img"
+			ref={svg}
+			onMouseMove={(e) => onMove(e)}
+			onMouseUp={() => {
+				setDragging(false);
+				setWhichDragged(Points.None);
+			}}
 		>
 			<svg role="img" aria-label="line" className="z-6">
 				<line
@@ -47,13 +81,39 @@ export default function Ruler({
 					className="stroke-white stroke-4"
 				/>
 			</svg>
-			<svg role="img" aria-label="point1" className="z-8 cursor-move" onMouseDown={startDragging} onMouseUp={stopDragging}>
-				<circle r="8" cx={p1x} cy={y} fill="black" />
-				<circle r="4" cx={p1x} cy={y} fill="white" />
+			<svg
+				role="img"
+				aria-label="point1"
+				className="z-8 cursor-move"
+				x={p1x - 8}
+				y={y - 8}
+				viewBox="-8 -8 16 16"
+				width={16}
+				height={16}
+				onMouseDown={() => {
+					setDragging(true);
+					setWhichDragged(Points.P1);
+				}}
+			>
+				<circle r="8" cx={0} cy={0} fill="black" />
+				<circle r="4" cx={0} cy={0} fill="white" />
 			</svg>
-			<svg role="img" aria-label="point2" className="z-7 cursor-move"onMouseDown={startDragging} onMouseUp={stopDragging}>
-				<circle r="8" cx={p2x} cy={y} fill="black" />
-				<circle r="4" cx={p2x} cy={y} fill="white" />
+			<svg
+				role="img"
+				aria-label="point2"
+				className="z-7 cursor-move"
+				x={p2x - 8}
+				y={y - 8}
+				viewBox="-8 -8 16 16"
+				width={16}
+				height={16}
+				onMouseDown={() => {
+					setDragging(true);
+					setWhichDragged(Points.P2);
+				}}
+			>
+				<circle r="8" cx={0} cy={0} fill="black" />
+				<circle r="4" cx={0} cy={0} fill="white" />
 			</svg>
 		</svg>
 	);
