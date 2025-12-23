@@ -12,12 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-	type Dispatch,
-	type SetStateAction,
-	useEffect,
-	useState,
-} from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import {
 	TransformComponent,
 	TransformWrapper,
@@ -55,6 +50,7 @@ import {
 } from "@/components/ui/input-group";
 import { Item } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
+import { crop } from "@/scripts/process";
 
 const formSchema = z.object({
 	distance: z.number().positive("Value must be positive"),
@@ -91,16 +87,31 @@ export default function Home() {
 	};
 
 	const beforeSubmit = () => {
-		console.log("aaaa");
-		if (file === undefined || file.length < 1 || rulerActive === false) {
+		if (
+			file === undefined ||
+			file.length < 1 ||
+			rulerActive === false ||
+			rulerP1X === rulerP2X
+		) {
 			return false;
 		}
 		return true;
 	};
 
-	const onSubmit = (value: { distance: number; size: number }) => {
-		console.log(rulerP1X);
-		console.log("HIIII");
+	const onSubmit = (
+		value: { distance: number; size: number },
+		unit: string,
+	) => {
+		if (file === undefined) {
+			return;
+		}
+		crop(
+			file[0],
+			Math.abs(rulerP2X - rulerP1X),
+			value.distance,
+			unit,
+			value.size,
+		);
 	};
 
 	return (
@@ -246,9 +257,11 @@ function Form({
 }: {
 	onSetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	onResetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
-	onSubmit: (value: { distance: number; size: number }) => void;
+	onSubmit: (value: { distance: number; size: number }, unit: string) => void;
 	beforeSubmit: () => boolean;
 }) {
+	const [processing, setProcessing] = useState(false);
+	const [unit, setUnit] = useState("m");
 	const form = useForm({
 		defaultValues: {
 			distance: 0,
@@ -263,14 +276,12 @@ function Form({
 			}
 			console.log("boingo");
 			setProcessing(true);
-			onSubmit(value);
+			onSubmit(value, unit);
 			setTimeout(() => {
 				setProcessing(false);
 			}, 1000);
 		},
 	});
-	const [processing, setProcessing] = useState(false);
-	const [unit, setUnit] = useState("m");
 	function preventInvalid(e: React.InputEvent<HTMLInputElement>) {
 		const val = e.data;
 		if (val && !/^[0-9.]$/.test(val)) {
