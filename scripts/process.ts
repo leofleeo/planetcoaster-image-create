@@ -3,6 +3,7 @@ import convert, { type Unit } from "convert";
 
 export async function crop(
 	image: File,
+	name: string,
 	rulerDistPixels: number,
 	rulerDistReal: number,
 	rulerDistUnit: string,
@@ -48,7 +49,7 @@ export async function crop(
 				height,
 			);
 			const imgBlob = await canvas.convertToBlob({ type: "image/png" });
-			const fileName = `row${xi + 1}-column${yi + 1}-map.png`;
+			const fileName = `${name}-row${xi + 1}-column${yi + 1}-map.png`;
 			const blobReader = new BlobReader(imgBlob);
 			await zipWriter.add(fileName, blobReader);
 		}

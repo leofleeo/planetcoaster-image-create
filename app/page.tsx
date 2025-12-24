@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import {
 	ChevronDownIcon,
 	DownloadIcon,
+	RollerCoasterIcon,
 	RotateCcwIcon,
 	RulerIcon,
 	TvMinimalIcon,
@@ -53,6 +54,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { crop } from "@/scripts/process";
 
 const formSchema = z.object({
+	coasterName: z.string().min(1, "You need to name the ride"),
 	distance: z.number().positive("Value must be positive"),
 	size: z.number().positive("Value must be positive"),
 });
@@ -99,7 +101,7 @@ export default function Home() {
 	};
 
 	const onSubmit = (
-		value: { distance: number; size: number },
+		value: { coasterName: string; distance: number; size: number },
 		unit: string,
 	) => {
 		if (file === undefined) {
@@ -107,6 +109,7 @@ export default function Home() {
 		}
 		crop(
 			file[0],
+			value.coasterName,
 			Math.abs(rulerP2X - rulerP1X),
 			value.distance,
 			unit,
@@ -118,7 +121,7 @@ export default function Home() {
 			const url = URL.createObjectURL(zip);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = "mapTiles.zip";
+			a.download = `${value.coasterName}-mapTiles.zip`;
 			a.click();
 			console.log("Downloading...");
 			URL.revokeObjectURL(url);
@@ -268,13 +271,17 @@ function Form({
 }: {
 	onSetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	onResetRuler: (e: React.MouseEvent<HTMLButtonElement>) => void;
-	onSubmit: (value: { distance: number; size: number }, unit: string) => void;
+	onSubmit: (
+		value: { coasterName: string; distance: number; size: number },
+		unit: string,
+	) => void;
 	beforeSubmit: () => boolean;
 }) {
 	const [processing, setProcessing] = useState(false);
 	const [unit, setUnit] = useState("m");
 	const form = useForm({
 		defaultValues: {
+			coasterName: "",
 			distance: 0,
 			size: 0,
 		},
@@ -308,6 +315,31 @@ function Form({
 			}}
 		>
 			<FieldGroup>
+				<form.Field
+					name="coasterName"
+					children={(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
+						return (
+							<Field data-invalid={isInvalid}>
+								<FieldLabel htmlFor={field.name}>Ride name</FieldLabel>
+								<InputGroup>
+									<InputGroupInput
+										aria-invalid={isInvalid}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(e) => field.handleChange(e.target.value)}
+										placeholder="Super epic coaster"
+									/>
+									<InputGroupAddon>
+										<RollerCoasterIcon />
+									</InputGroupAddon>
+								</InputGroup>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				/>
 				<form.Field
 					name="distance"
 					children={(field) => {
