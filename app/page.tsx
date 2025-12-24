@@ -111,7 +111,19 @@ export default function Home() {
 			value.distance,
 			unit,
 			value.size,
-		);
+		).then((zip) => {
+			console.log("hi twin");
+			if (zip === undefined) {
+				console.log("um what");
+				return;
+			}
+			const url = URL.createObjectURL(zip);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = "mapTiles.zip";
+			a.click();
+			URL.revokeObjectURL(url);
+		});
 	};
 
 	return (
@@ -274,7 +286,6 @@ function Form({
 			if (!beforeSubmit()) {
 				return;
 			}
-			console.log("boingo");
 			setProcessing(true);
 			onSubmit(value, unit);
 			setTimeout(() => {
