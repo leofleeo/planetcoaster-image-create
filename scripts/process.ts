@@ -48,15 +48,13 @@ export async function crop(
 				height,
 			);
 			const imgBlob = await canvas.convertToBlob({ type: "image/png" });
-			console.log("writey write write");
-			const fileName = `column${xi + 1}-row${yi + 1}-map.png`;
+			const fileName = `row${xi + 1}-column${yi + 1}-map.png`;
 			const blobReader = new BlobReader(imgBlob);
 			await zipWriter.add(fileName, blobReader);
 		}
 	}
-	console.log("yo I'm waiting for my data");
 	await zipWriter.close();
 	const data = await zipFileWriter.getData();
-	console.log("I got here and I shall return");
+	console.log("Zip generated!");
 	return data;
 }

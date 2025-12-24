@@ -112,9 +112,7 @@ export default function Home() {
 			unit,
 			value.size,
 		).then((zip) => {
-			console.log("hi twin");
 			if (zip === undefined) {
-				console.log("um what");
 				return;
 			}
 			const url = URL.createObjectURL(zip);
@@ -122,6 +120,7 @@ export default function Home() {
 			a.href = url;
 			a.download = "mapTiles.zip";
 			a.click();
+			console.log("Downloading...");
 			URL.revokeObjectURL(url);
 		});
 	};
