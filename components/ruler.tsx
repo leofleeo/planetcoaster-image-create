@@ -74,24 +74,20 @@ export default function Ruler({
 	};
 
 	const onClick = (e: MouseEvent) => {
-		console.log("onclicky");
 		if (!setting) {
 			return;
 		}
-		console.log("is setty");
 		const pt = convertPosToSVGPos(e.clientX, e.clientY);
 		if (pt === undefined) {
 			return;
 		}
 		if (currentPoint === 1) {
-			console.log("is 1");
 			setP1X(pt.x);
 			setP2X(pt.x);
 			setY(pt.y);
 			setCurrentPoint(2);
 		}
 		if (currentPoint >= 2) {
-			console.log("is 2 or greater");
 			setP2X(pt.x);
 			setY(pt.y);
 			setCurrentPoint(1);
