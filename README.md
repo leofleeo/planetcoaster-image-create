@@ -1,12 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## This project is a WIP
-
-This project is a work in progress, it currently does not work!
-
 ## Summary
 
-This is a web tool to automatically crop maps into the correct size for planet coaster
+This is a web tool to automatically crop maps into the correct size for planet coaster.
+
+## How to use
+
+* Upload an image
+* Enter the ride name
+* Click set ruler and then click on both ends of the map ruler
+* Enter the distance of the map ruler
+* Enter the width of the screen you will use in game
+* Click download
 
 ## Getting Started
 
