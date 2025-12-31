@@ -407,7 +407,7 @@ function Form({
 					<Button onClick={(e) => onSetRuler(e)}>
 						<RulerIcon /> Set map ruler
 					</Button>
-					<Button onClick={(e) => onResetRuler(e)}>
+					<Button onClick={(e) => onResetRuler(e)} variant="outline">
 						<RotateCcwIcon /> Reset ruler
 					</Button>
 				</Field>
