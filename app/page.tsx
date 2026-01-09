@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import {
 	ChevronDownIcon,
 	DownloadIcon,
+	PencilRulerIcon,
 	RollerCoasterIcon,
 	RotateCcwIcon,
 	RulerIcon,
@@ -322,7 +323,9 @@ function Form({
 							field.state.meta.isTouched && !field.state.meta.isValid;
 						return (
 							<Field data-invalid={isInvalid}>
-								<FieldLabel htmlFor={field.name}>Ride name</FieldLabel>
+								<FieldLabel htmlFor={field.name}>
+									<RollerCoasterIcon size="1rem" /> Ride name
+								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
 										aria-invalid={isInvalid}
@@ -331,9 +334,6 @@ function Form({
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="Super epic coaster"
 									/>
-									<InputGroupAddon>
-										<RollerCoasterIcon />
-									</InputGroupAddon>
 								</InputGroup>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
 							</Field>
@@ -347,7 +347,9 @@ function Form({
 							field.state.meta.isTouched && !field.state.meta.isValid;
 						return (
 							<Field data-invalid={isInvalid}>
-								<FieldLabel htmlFor={field.name}>Distance</FieldLabel>
+								<FieldLabel htmlFor={field.name}>
+									<RulerIcon size="1rem" /> Distance
+								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
 										aria-invalid={isInvalid}
@@ -361,9 +363,6 @@ function Form({
 										onBeforeInput={(e) => preventInvalid(e)}
 										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 									/>
-									<InputGroupAddon>
-										<RulerIcon />
-									</InputGroupAddon>
 									<InputGroupAddon align="inline-end">
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
@@ -405,7 +404,7 @@ function Form({
 				/>
 				<Field orientation="horizontal">
 					<Button onClick={(e) => onSetRuler(e)}>
-						<RulerIcon /> Set map ruler
+						<PencilRulerIcon /> Set map ruler
 					</Button>
 					<Button onClick={(e) => onResetRuler(e)} variant="outline">
 						<RotateCcwIcon /> Reset ruler
@@ -419,7 +418,7 @@ function Form({
 						return (
 							<Field data-invalid={isInvalid}>
 								<FieldLabel htmlFor={field.name}>
-									In game screen size
+									<TvMinimalIcon size="1rem" /> In game screen size
 								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
@@ -434,9 +433,6 @@ function Form({
 										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 										inputMode="decimal"
 									/>
-									<InputGroupAddon>
-										<TvMinimalIcon />
-									</InputGroupAddon>
 									<InputGroupAddon align="inline-end">m</InputGroupAddon>
 								</InputGroup>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
