@@ -101,32 +101,31 @@ export default function Home() {
 		return true;
 	};
 
-	const onSubmit = (
+	const onSubmit = async (
 		value: { coasterName: string; distance: number; size: number },
 		unit: string,
 	) => {
 		if (file === undefined) {
 			return;
 		}
-		crop(
+		const zip = await crop(
 			file[0],
 			value.coasterName,
 			Math.abs(rulerP2X - rulerP1X),
 			value.distance,
 			unit,
 			value.size,
-		).then((zip) => {
-			if (zip === undefined) {
-				return;
-			}
-			const url = URL.createObjectURL(zip);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = `${value.coasterName}-mapTiles.zip`;
-			a.click();
-			console.log("Downloading...");
-			URL.revokeObjectURL(url);
-		});
+		);
+		if (zip === undefined) {
+			return;
+		}
+		const url = URL.createObjectURL(zip);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `${value.coasterName}-mapTiles.zip`;
+		a.click();
+		console.log("Downloading...");
+		URL.revokeObjectURL(url);
 	};
 
 	return (
@@ -275,7 +274,7 @@ function Form({
 	onSubmit: (
 		value: { coasterName: string; distance: number; size: number },
 		unit: string,
-	) => void;
+	) => Promise<void>;
 	beforeSubmit: () => boolean;
 }) {
 	const [processing, setProcessing] = useState(false);
@@ -294,10 +293,7 @@ function Form({
 				return;
 			}
 			setProcessing(true);
-			onSubmit(value, unit);
-			setTimeout(() => {
-				setProcessing(false);
-			}, 1000);
+			onSubmit(value, unit).then(() => setProcessing(false));
 		},
 	});
 	function preventInvalid(e: React.InputEvent<HTMLInputElement>) {
@@ -441,7 +437,7 @@ function Form({
 					}}
 				/>
 				<Field orientation="horizontal">
-					<Button>
+					<Button disabled={processing}>
 						{(() => {
 							return processing ? <Spinner /> : <DownloadIcon />;
 						})()}
