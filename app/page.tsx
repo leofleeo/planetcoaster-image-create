@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import {
 	ChevronDownIcon,
 	DownloadIcon,
+	PencilRulerIcon,
 	RollerCoasterIcon,
 	RotateCcwIcon,
 	RulerIcon,
@@ -100,32 +101,31 @@ export default function Home() {
 		return true;
 	};
 
-	const onSubmit = (
+	const onSubmit = async (
 		value: { coasterName: string; distance: number; size: number },
 		unit: string,
 	) => {
 		if (file === undefined) {
 			return;
 		}
-		crop(
+		const zip = await crop(
 			file[0],
 			value.coasterName,
 			Math.abs(rulerP2X - rulerP1X),
 			value.distance,
 			unit,
 			value.size,
-		).then((zip) => {
-			if (zip === undefined) {
-				return;
-			}
-			const url = URL.createObjectURL(zip);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = `${value.coasterName}-mapTiles.zip`;
-			a.click();
-			console.log("Downloading...");
-			URL.revokeObjectURL(url);
-		});
+		);
+		if (zip === undefined) {
+			return;
+		}
+		const url = URL.createObjectURL(zip);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `${value.coasterName}-mapTiles.zip`;
+		a.click();
+		console.log("Downloading...");
+		URL.revokeObjectURL(url);
 	};
 
 	return (
@@ -274,7 +274,7 @@ function Form({
 	onSubmit: (
 		value: { coasterName: string; distance: number; size: number },
 		unit: string,
-	) => void;
+	) => Promise<void>;
 	beforeSubmit: () => boolean;
 }) {
 	const [processing, setProcessing] = useState(false);
@@ -293,10 +293,7 @@ function Form({
 				return;
 			}
 			setProcessing(true);
-			onSubmit(value, unit);
-			setTimeout(() => {
-				setProcessing(false);
-			}, 1000);
+			onSubmit(value, unit).then(() => setProcessing(false));
 		},
 	});
 	function preventInvalid(e: React.InputEvent<HTMLInputElement>) {
@@ -322,7 +319,9 @@ function Form({
 							field.state.meta.isTouched && !field.state.meta.isValid;
 						return (
 							<Field data-invalid={isInvalid}>
-								<FieldLabel htmlFor={field.name}>Ride name</FieldLabel>
+								<FieldLabel htmlFor={field.name}>
+									<RollerCoasterIcon size="1rem" /> Ride name
+								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
 										aria-invalid={isInvalid}
@@ -331,9 +330,6 @@ function Form({
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="Super epic coaster"
 									/>
-									<InputGroupAddon>
-										<RollerCoasterIcon />
-									</InputGroupAddon>
 								</InputGroup>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
 							</Field>
@@ -347,7 +343,9 @@ function Form({
 							field.state.meta.isTouched && !field.state.meta.isValid;
 						return (
 							<Field data-invalid={isInvalid}>
-								<FieldLabel htmlFor={field.name}>Distance</FieldLabel>
+								<FieldLabel htmlFor={field.name}>
+									<RulerIcon size="1rem" /> Distance
+								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
 										aria-invalid={isInvalid}
@@ -361,9 +359,6 @@ function Form({
 										onBeforeInput={(e) => preventInvalid(e)}
 										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 									/>
-									<InputGroupAddon>
-										<RulerIcon />
-									</InputGroupAddon>
 									<InputGroupAddon align="inline-end">
 										<DropdownMenu>
 											<DropdownMenuTrigger asChild>
@@ -405,9 +400,9 @@ function Form({
 				/>
 				<Field orientation="horizontal">
 					<Button onClick={(e) => onSetRuler(e)}>
-						<RulerIcon /> Set map ruler
+						<PencilRulerIcon /> Set map ruler
 					</Button>
-					<Button onClick={(e) => onResetRuler(e)}>
+					<Button onClick={(e) => onResetRuler(e)} variant="outline">
 						<RotateCcwIcon /> Reset ruler
 					</Button>
 				</Field>
@@ -419,7 +414,7 @@ function Form({
 						return (
 							<Field data-invalid={isInvalid}>
 								<FieldLabel htmlFor={field.name}>
-									In game screen size
+									<TvMinimalIcon size="1rem" /> In game screen size
 								</FieldLabel>
 								<InputGroup>
 									<InputGroupInput
@@ -434,9 +429,6 @@ function Form({
 										onChange={(e) => field.handleChange(e.target.valueAsNumber)}
 										inputMode="decimal"
 									/>
-									<InputGroupAddon>
-										<TvMinimalIcon />
-									</InputGroupAddon>
 									<InputGroupAddon align="inline-end">m</InputGroupAddon>
 								</InputGroup>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -445,7 +437,7 @@ function Form({
 					}}
 				/>
 				<Field orientation="horizontal">
-					<Button>
+					<Button disabled={processing}>
 						{(() => {
 							return processing ? <Spinner /> : <DownloadIcon />;
 						})()}

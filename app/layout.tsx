@@ -34,6 +34,7 @@ export default function RootLayout({
 					//<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.3/eruda.min.js"></script>
 					//<script>eruda.init();</script>
 				}
+				
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"
