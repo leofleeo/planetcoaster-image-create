@@ -27,26 +27,18 @@ export async function crop(
 	const zipFileWriter = new BlobWriter();
 	const zipWriter = new ZipWriter(zipFileWriter);
 	for (let yi = 0; yi < yTiles; yi++) {
-		let height = singleHeight;
-		if (yi * singleHeight < imgBmp.height) {
-			height = imgBmp.height - yi * singleHeight;
-		}
 		for (let xi = 0; xi < xTiles; xi++) {
-			let width = singleWidth;
-			if (xi * singleWidth < imgBmp.width) {
-				width = imgBmp.width - xi * singleWidth;
-			}
 			ctx.clearRect(0, 0, singleWidth, singleHeight);
 			ctx.drawImage(
 				imgBmp,
 				xi * singleWidth,
 				yi * singleHeight,
-				width,
-				height,
+				singleWidth,
+				singleHeight,
 				0,
 				0,
-				width,
-				height,
+				singleWidth,
+				singleHeight,
 			);
 			const imgBlob = await canvas.convertToBlob({ type: "image/png" });
 			const fileName = `${name}-column${xi + 1}-row${yi + 1}-map.png`;
