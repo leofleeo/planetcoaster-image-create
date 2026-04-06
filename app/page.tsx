@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, FC, type SetStateAction, useEffect, useRef, useState } from "react";
 import {
 	TransformComponent,
 	TransformWrapper,
@@ -69,12 +69,29 @@ export default function Home() {
 	const [rulerP1X, setRulerP1X] = useState(10);
 	const [rulerP2X, setRulerP2X] = useState(40);
 	const [settingRuler, setSettingRuler] = useState(false);
+	const [imageScale, setImageScale] = useState(1);
+	const imageRef = useRef<HTMLImageElement>(null);
+
 	useEffect(() => {
 		if (file !== undefined) {
-			setUploadedImgUrl(URL.createObjectURL(file[0]));
+			const fileUrl = URL.createObjectURL(file[0]);
+			setUploadedImgUrl(fileUrl);
+			// Get actual image dimensions to calculate scale
+			createImageBitmap(file[0]).then((bmp) => {
+				// Measure container width on next frame to ensure it's rendered
+				requestAnimationFrame(() => {
+					const containerWidth = imageRef.current?.clientWidth ?? 1;
+					console.log(`Image container width: ${containerWidth}px, Image width: ${bmp.width}px`)
+					const scale = bmp.width / containerWidth;
+					console.log(`Calculated scale: ${scale}`)
+					setImageScale(scale);
+				});
+			});
 		}
 	}, [file]);
-
+	useEffect(() => {
+			console.log(`Device pixel ratio: ${window.devicePixelRatio}`)
+	}, []);
 	const onSetRuler = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 		setRulerActive(true);
@@ -111,7 +128,7 @@ export default function Home() {
 		const zip = await crop(
 			file[0],
 			value.coasterName,
-			Math.abs(rulerP2X - rulerP1X),
+			Math.abs(rulerP2X - rulerP1X) * imageScale,
 			value.distance,
 			unit,
 			value.size,
@@ -136,7 +153,7 @@ export default function Home() {
 					<ThemeSwitcher />
 				</div>
 				<div className="w-full flex gap-4 flex-row">
-					<div className="h-128 max-h-128 flex-1">
+				<div className="h-128 max-h-128 flex-1">
 						{(() => {
 							return uploadedImgUrl === undefined ? (
 								<FileDrop file={file} setFile={setFile} />
@@ -151,6 +168,7 @@ export default function Home() {
 													alt="uploaded image"
 													fill
 													className="relative!"
+													ref={imageRef}
 												/>
 												{rulerActive ? (
 													<Ruler
