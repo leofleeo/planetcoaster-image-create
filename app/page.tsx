@@ -85,7 +85,8 @@ export default function Home() {
 			setUploadedImgUrl(fileUrl);
 			createImageBitmap(file[0]).then((bmp) => {
 				setImgSize([bmp.width, bmp.height]);
-			});
+      });
+			// TODO: Remove me if the current fix works
 			// Get actual image dimensions to calculate scale
 
 			// createImageBitmap(file[0]).then((bmp) => {
