@@ -95,7 +95,8 @@ export default function Ruler({
 		}
 	};
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: a keypress just wouldn't make sense why would I even need this?? people who really need to use keyboard can just rebind a key to their mouse
+		//TODO: Set svg width and height to image width maybe?
+		// biome-ignore lint/a11y/useKeyWithClickEvents: doesn't make sense in this scenario
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			className="z-5 absolute w-full h-full"
