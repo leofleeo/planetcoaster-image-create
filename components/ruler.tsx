@@ -17,6 +17,8 @@ export default function Ruler({
 	setY,
 	setting,
 	setSetting,
+	width,
+	height,
 }: {
 	p1x: number;
 	p2x: number;
@@ -27,6 +29,8 @@ export default function Ruler({
 	setDragging: Dispatch<SetStateAction<boolean>>;
 	setting: boolean;
 	setSetting: Dispatch<SetStateAction<boolean>>;
+	width: number;
+	height: number;
 }) {
 	const svg = useRef<SVGSVGElement>(null);
 	enum Points {
@@ -101,6 +105,7 @@ export default function Ruler({
 			xmlns="http://www.w3.org/2000/svg"
 			className="z-5 absolute w-full h-full"
 			aria-label="ruler"
+			viewBox={`0 0 ${width} ${height}`}
 			role="img"
 			ref={svg}
 			onMouseMove={onMove}

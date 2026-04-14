@@ -14,7 +14,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
+import {
+	type Dispatch,
+	type SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import {
 	TransformComponent,
 	TransformWrapper,
@@ -70,27 +76,32 @@ export default function Home() {
 	const [rulerP2X, setRulerP2X] = useState(40);
 	const [settingRuler, setSettingRuler] = useState(false);
 	const [imageScale, setImageScale] = useState(1);
+	const [imgSize, setImgSize] = useState<[number, number]>([0, 0]);
 	const imageRef = useRef<HTMLImageElement>(null);
 
 	useEffect(() => {
 		if (file !== undefined) {
 			const fileUrl = URL.createObjectURL(file[0]);
 			setUploadedImgUrl(fileUrl);
-			// Get actual image dimensions to calculate scale
 			createImageBitmap(file[0]).then((bmp) => {
-				// Measure container width on next frame to ensure it's rendered
-				requestAnimationFrame(() => {
-					const containerWidth = imageRef.current?.clientWidth ?? 1;
-					console.log(`Image container width: ${containerWidth}px, Image width: ${bmp.width}px`)
-					const scale = bmp.width / containerWidth;
-					console.log(`Calculated scale: ${scale}`)
-					setImageScale(scale);
-				});
+				setImgSize([bmp.width, bmp.height]);
 			});
+			// Get actual image dimensions to calculate scale
+
+			// createImageBitmap(file[0]).then((bmp) => {
+			// 	// Measure container width on next frame to ensure it's rendered
+			// 	requestAnimationFrame(() => {
+			// 		const containerWidth = imageRef.current?.clientWidth ?? 1;
+			// 		console.log(`Image container width: ${containerWidth}px, Image width: ${bmp.width}px`)
+			// 		const scale = bmp.width / containerWidth;
+			// 		console.log(`Calculated scale: ${scale}`)
+			// 		setImageScale(scale);
+			// 	});
+			// });
 		}
 	}, [file]);
 	useEffect(() => {
-			console.log(`Device pixel ratio: ${window.devicePixelRatio}`)
+		console.log(`Device pixel ratio: ${window.devicePixelRatio}`);
 	}, []);
 	const onSetRuler = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
@@ -153,39 +164,38 @@ export default function Home() {
 					<ThemeSwitcher />
 				</div>
 				<div className="w-full flex gap-4 flex-row">
-				<div className="h-128 max-h-128 flex-1">
+					<div className="h-128 max-h-128 flex-1">
 						{(() => {
 							return uploadedImgUrl === undefined ? (
 								<FileDrop file={file} setFile={setFile} />
 							) : (
-								<TransformWrapper minScale={0.6} disabled={rulerDragging}>
-									{({ zoomIn, zoomOut, resetTransform, ..._rest }) => (
-										<>
-											<Controls />
-											<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm border border-border bg-background">
-												<Image
-													src={uploadedImgUrl}
-													alt="uploaded image"
-													fill
-													className="relative!"
-													ref={imageRef}
-												/>
-												{rulerActive ? (
-													<Ruler
-														p1x={rulerP1X}
-														y={rulerY}
-														p2x={rulerP2X}
-														setP1X={setRulerP1X}
-														setP2X={setRulerP2X}
-														setY={setRulerY}
-														setDragging={setRulerDragging}
-														setting={settingRuler}
-														setSetting={setSettingRuler}
-													/>
-												) : null}
-											</TransformComponent>
-										</>
-									)}
+								<TransformWrapper minScale={0.2} disabled={rulerDragging}>
+									<Controls />
+									<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm border border-border bg-background">
+										<Image
+											src={uploadedImgUrl}
+											alt="uploaded image"
+											width={imgSize[0]}
+											height={imgSize[1]}
+											className="relative!"
+											ref={imageRef}
+										/>
+										{rulerActive ? (
+											<Ruler
+												p1x={rulerP1X}
+												y={rulerY}
+												p2x={rulerP2X}
+												setP1X={setRulerP1X}
+												setP2X={setRulerP2X}
+												setY={setRulerY}
+												setDragging={setRulerDragging}
+												setting={settingRuler}
+												setSetting={setSettingRuler}
+												width={imgSize[0]}
+												height={imgSize[1]}
+											/>
+										) : null}
+									</TransformComponent>
 								</TransformWrapper>
 							);
 						})()}
