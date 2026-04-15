@@ -86,19 +86,6 @@ export default function Home() {
 			createImageBitmap(file[0]).then((bmp) => {
 				setImgSize([bmp.width, bmp.height]);
       });
-			// TODO: Remove me if the current fix works
-			// Get actual image dimensions to calculate scale
-
-			// createImageBitmap(file[0]).then((bmp) => {
-			// 	// Measure container width on next frame to ensure it's rendered
-			// 	requestAnimationFrame(() => {
-			// 		const containerWidth = imageRef.current?.clientWidth ?? 1;
-			// 		console.log(`Image container width: ${containerWidth}px, Image width: ${bmp.width}px`)
-			// 		const scale = bmp.width / containerWidth;
-			// 		console.log(`Calculated scale: ${scale}`)
-			// 		setImageScale(scale);
-			// 	});
-			// });
 		}
 	}, [file]);
 	useEffect(() => {
