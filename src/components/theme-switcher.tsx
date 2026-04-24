@@ -2,23 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, SunMoon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "./theme-provider";
 import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
 	const [rendered, setRendered] = useState(false);
-	const { resolvedTheme, setTheme } = useTheme();
+	const { theme, setTheme } = useTheme();
 
 	useEffect(() => {
 		setRendered(true);
 	}, []);
 
 	function changeTheme() {
-		if (resolvedTheme === undefined) {
+		if (theme === undefined) {
 			setTheme("dark");
 			return;
 		}
-		resolvedTheme === "dark" ? setTheme("light") : setTheme("dark");
+		theme === "dark" ? setTheme("light") : setTheme("dark");
 	}
 
 	if (!rendered) {
@@ -32,9 +32,9 @@ export default function ThemeSwitcher() {
 	return (
 		<Button variant="outline" size="icon-lg" onClick={changeTheme}>
 			{(() => {
-				if (resolvedTheme === "light") {
+				if (theme === "light") {
 					return <Moon />;
-				} else if (resolvedTheme === "dark") {
+				} else if (theme === "dark") {
 					return <Sun />;
 				}
 				return <SunMoon />;

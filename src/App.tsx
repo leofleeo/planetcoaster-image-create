@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/noChildrenProp: children prop needed for tanstack form */
 "use client";
 
 import { useForm } from "@tanstack/react-form";
@@ -12,8 +13,6 @@ import {
 	ZoomInIcon,
 	ZoomOutIcon,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import {
 	type Dispatch,
 	type SetStateAction,
@@ -56,9 +55,8 @@ import {
 	InputGroupButton,
 	InputGroupInput,
 } from "@/components/ui/input-group";
-import { Item } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
-import { crop } from "@/scripts/process";
+import { crop } from "@/lib/process";
 
 const formSchema = z.object({
 	coasterName: z.string().min(1, "You need to name the ride"),
@@ -75,7 +73,6 @@ export default function Home() {
 	const [rulerP1X, setRulerP1X] = useState(10);
 	const [rulerP2X, setRulerP2X] = useState(40);
 	const [settingRuler, setSettingRuler] = useState(false);
-	const [imageScale, setImageScale] = useState(1);
 	const [imgSize, setImgSize] = useState<[number, number]>([0, 0]);
 	const imageRef = useRef<HTMLImageElement>(null);
 
@@ -85,7 +82,7 @@ export default function Home() {
 			setUploadedImgUrl(fileUrl);
 			createImageBitmap(file[0]).then((bmp) => {
 				setImgSize([bmp.width, bmp.height]);
-      });
+			});
 		}
 	}, [file]);
 	useEffect(() => {
@@ -127,7 +124,7 @@ export default function Home() {
 		const zip = await crop(
 			file[0],
 			value.coasterName,
-			Math.abs(rulerP2X - rulerP1X) * imageScale,
+			Math.abs(rulerP2X - rulerP1X),
 			value.distance,
 			unit,
 			value.size,
@@ -146,7 +143,7 @@ export default function Home() {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 py-16 px-16 bg-white dark:bg-black sm:items-start">
+			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 p-8 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
 					<ThemeSwitcher />
@@ -160,9 +157,9 @@ export default function Home() {
 								<TransformWrapper minScale={0.2} disabled={rulerDragging}>
 									<Controls />
 									<TransformComponent wrapperClass="min-w-full min-h-full max-w-full max-h-full rounded-sm border border-border bg-background">
-										<Image
+										<img
 											src={uploadedImgUrl}
-											alt="uploaded image"
+											alt="uploaded"
 											width={imgSize[0]}
 											height={imgSize[1]}
 											className="relative!"
@@ -188,10 +185,7 @@ export default function Home() {
 							);
 						})()}
 					</div>
-					<Item
-						variant="outline"
-						className="flex-1 bg-background flex items-start p-4 flex-col"
-					>
+					<div className="flex-1 bg-background flex items-start p-4 flex-col border border-border rounded-md">
 						<h2 className="text-2xl font-bold">Options</h2>
 						<Form
 							onSetRuler={onSetRuler}
@@ -199,7 +193,7 @@ export default function Home() {
 							beforeSubmit={beforeSubmit}
 							onSubmit={onSubmit}
 						/>
-					</Item>
+					</div>
 				</div>
 				<div>
 					<p>
@@ -208,9 +202,9 @@ export default function Home() {
 					</p>
 					<p>
 						Made with ❤️ by{" "}
-						<Link href="https://github.com/leofleeo" className="underline">
+						<a href="https://github.com/leofleeo" className="underline">
 							leofleeo
-						</Link>
+						</a>
 					</p>
 				</div>
 			</main>
