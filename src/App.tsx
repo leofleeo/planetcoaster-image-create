@@ -182,7 +182,7 @@ export default function Home() {
 						})()}
 					</div>
 					<div className="flex-1 bg-background flex items-start p-4 flex-col border border-border rounded-md">
-						<h2 className="text-2xl font-bold">Options</h2>
+						<h2 className="text-2xl font-bold mb-2">Options</h2>
 						<Form
 							onSetRuler={onSetRuler}
 							onResetRuler={onResetRuler}
@@ -333,6 +333,7 @@ function Form({
 										aria-invalid={isInvalid}
 										value={field.state.value}
 										onBlur={field.handleBlur}
+										id={field.name}
 										onChange={(e) => field.handleChange(e.target.value)}
 										placeholder="Super epic coaster"
 									/>
