@@ -82,7 +82,7 @@ export default function Home() {
 			setUploadedImgUrl(fileUrl);
 			createImageBitmap(file[0]).then((bmp) => {
 				setImgSize([bmp.width, bmp.height]);
-      });
+			});
 		}
 	}, [file]);
 	useEffect(() => {
@@ -185,9 +185,7 @@ export default function Home() {
 							);
 						})()}
 					</div>
-					<div
-						className="flex-1 bg-background flex items-start p-4 flex-col border border-border rounded-md"
-					>
+					<div className="flex-1 bg-background flex items-start p-4 flex-col border border-border rounded-md">
 						<h2 className="text-2xl font-bold">Options</h2>
 						<Form
 							onSetRuler={onSetRuler}
