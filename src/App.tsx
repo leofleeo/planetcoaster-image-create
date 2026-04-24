@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/correctness/noChildrenProp: children prop needed for tanstack form */
-"use client";
 
 import { useForm } from "@tanstack/react-form";
 import {
@@ -85,9 +84,6 @@ export default function Home() {
 			});
 		}
 	}, [file]);
-	useEffect(() => {
-		console.log(`Device pixel ratio: ${window.devicePixelRatio}`);
-	}, []);
 	const onSetRuler = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 		setRulerActive(true);
@@ -146,6 +142,7 @@ export default function Home() {
 			<main className="flex min-h-screen w-full flex-col items-center justify-normal gap-5 p-8 bg-white dark:bg-black sm:items-start">
 				<div className="flex items-center justify-between w-full">
 					<h1 className="text-2xl font-bold">Planet Coaster Map Creator</h1>
+					<h1>vite update?</h1>
 					<ThemeSwitcher />
 				</div>
 				<div className="w-full flex gap-4 flex-row">
@@ -198,7 +195,7 @@ export default function Home() {
 				<div>
 					<p>
 						All processing is done locally on your computer. The image you
-						upload to the website is not uploaded to the internet.
+						upload to this website is not uploaded to the internet.
 					</p>
 					<p>
 						Made with ❤️ by{" "}

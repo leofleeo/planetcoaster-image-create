@@ -1,17 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Moon, Sun, SunMoon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
-import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
-	const [rendered, setRendered] = useState(false);
 	const { theme, setTheme } = useTheme();
-
-	useEffect(() => {
-		setRendered(true);
-	}, []);
 
 	function changeTheme() {
 		if (theme === undefined) {
@@ -21,16 +15,13 @@ export default function ThemeSwitcher() {
 		theme === "dark" ? setTheme("light") : setTheme("dark");
 	}
 
-	if (!rendered) {
-		return (
-			<Button variant="outline" size="icon-lg" onClick={changeTheme}>
-				<SunMoon />
-			</Button>
-		);
-	}
-
 	return (
-		<Button variant="outline" size="icon-lg" onClick={changeTheme}>
+		<Button
+			variant="outline"
+			size="icon-lg"
+			onClick={changeTheme}
+			aria-label="switch theme"
+		>
 			{(() => {
 				if (theme === "light") {
 					return <Moon />;
